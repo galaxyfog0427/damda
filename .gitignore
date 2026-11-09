@@ -1,0 +1,26 @@
+# OS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# 비밀값 (공개 저장소: 실제 값은 .env, 서버, GitHub Secrets에만)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# 빌드 결과
+.gradle/
+build/
+out/
+node_modules/
+dist/
+*.log
+
+# Claude Code 개인 설정 (공유 설정 .claude/settings.json은 커밋함)
+.claude/settings.local.json
