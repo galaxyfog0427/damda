@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 5
+    groups:
+      gradle-patch:
+        update-types: [patch]
+    ignore:
+      # ADR-0003: Boot 4.2는 4.2.1이 나온 뒤, v1이 끝나고 직접 올린다
+      - dependency-name: "org.springframework.boot*"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
