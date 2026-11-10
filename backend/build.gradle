@@ -5,7 +5,7 @@ plugins {
 }
 
 ext {
-	querydslVersion = '7.6'
+	querydslVersion = '7.7'
 }
 
 group = 'dev.damda'
