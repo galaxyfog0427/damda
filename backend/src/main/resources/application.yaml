@@ -1,3 +1,9 @@
 spring:
   application:
     name: damda
+  profiles:
+    default: local          # 아무 프로필도 안 주면 local, 서버는 SPRING_PROFILES_ACTIVE=prod
+  jpa:
+    open-in-view: false     # 11/11 결정: DB 연결은 서비스(트랜잭션) 안에서만
+    hibernate:
+      ddl-auto: validate    # ADR-0003: 테이블은 Flyway가 만들고 Hibernate는 검사만

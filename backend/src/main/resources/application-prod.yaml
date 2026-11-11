@@ -1,0 +1,8 @@
+# 공개 저장소다. 실제 값은 서버의 환경 변수로만 넣는다
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+server:
+  forward-headers-strategy: native    # ADR-0007 3-4: Nginx 뒤에서 실제 사용자 IP, HTTPS 알기
