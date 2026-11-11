@@ -50,6 +50,8 @@ dependencies {
 
 	// ArchUnit: 패키지 규칙 테스트 (ADR-0004)
 	testImplementation 'com.tngtech.archunit:archunit-junit6:1.5.1'
+
+	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 }
 
 tasks.named('test') {

@@ -1,0 +1,4 @@
+# DB 연결은 Boot의 Docker Compose 지원이 compose.yaml을 보고 자동으로 만든다
+logging:
+  level:
+    org.hibernate.sql: debug    # 개발 중에 실행되는 SQL 보기

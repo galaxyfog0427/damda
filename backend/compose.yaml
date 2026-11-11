@@ -1,0 +1,16 @@
+# 로컬 개발 전용
+services:
+  mysql:
+    image: 'mysql:8.4'
+    environment:
+      MYSQL_DATABASE: damda
+      MYSQL_USER: damda
+      MYSQL_PASSWORD: local-only-password
+      MYSQL_ROOT_PASSWORD: local-only-root
+    ports:
+      - '127.0.0.1:13306:3306'    # 맥 안에서만 열리며, 3306은 board의 MySQL과 겹칠 수 있어 피함
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
