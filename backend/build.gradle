@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.1.2'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.diffplug.spotless' version '8.11.0'
 }
 
 ext {
@@ -56,4 +57,13 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// 코드 모양 자동 정리 (11/14 결정: Spotless + palantir-java-format)
+// Java 25의 import module, compact source file, 이름 없는 패턴(_)은 아직 포매터가 처리하지 못해 쓰지 않는다
+spotless {
+	java {
+		target 'src/*/java/**/*.java'
+		palantirJavaFormat('2.102.0')
+	}
 }
