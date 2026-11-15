@@ -6,3 +6,9 @@ spring:
     password: ${DB_PASSWORD}
 server:
   forward-headers-strategy: native    # ADR-0007 3-4: Nginx 뒤에서 실제 사용자 IP, HTTPS 알기
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

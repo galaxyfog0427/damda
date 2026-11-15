@@ -55,3 +55,11 @@ jobs:
           java-version: '25'
           cache: gradle
       - run: ./gradlew build
+      - name: 계약 파일이 최신인지 (ADR-0006 결정 1)
+        run: |
+          if [ -n "$(git status --porcelain -- ../contract)" ]; then
+            git status --porcelain -- ../contract
+            git diff -- ../contract
+            echo "::error::contract/openapi.yaml이 코드와 다릅니다. 로컬에서 ./gradlew test 뒤 파일을 커밋하세요."
+            exit 1
+          fi
