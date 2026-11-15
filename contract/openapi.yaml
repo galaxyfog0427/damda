@@ -5,6 +5,58 @@ info:
 servers:
 - url: /
 paths:
+  /api/v1/templates:
+    get:
+      operationId: list
+      parameters:
+      - in: query
+        name: category
+        required: false
+        schema:
+          type:
+          - string
+          - "null"
+          enum:
+          - PLANNER
+          - STUDY
+          - CAREER
+          - WORK
+          - LIFE
+          - PRESENTATION
+      - in: query
+        name: format
+        required: false
+        schema:
+          type:
+          - string
+          - "null"
+          enum:
+          - NOTION
+          - PPT
+      - in: query
+        name: q
+        required: false
+        schema:
+          type:
+          - string
+          - "null"
+      - in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagedModelTemplateSummaryResponse"
+          description: OK
+      tags:
+      - template-controller
   /api/v1/templates/{id}:
     get:
       operationId: detail
@@ -26,9 +78,82 @@ paths:
       - template-controller
 components:
   schemas:
+    PageMetadata:
+      type: object
+      properties:
+        number:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+      required:
+      - number
+      - size
+      - totalElements
+      - totalPages
+    PagedModelTemplateSummaryResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplateSummaryResponse"
+        page:
+          $ref: "#/components/schemas/PageMetadata"
+      required:
+      - content
+      - page
+    TemplateCreatorResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        official:
+          type: boolean
+      required:
+      - name
+      - official
     TemplateDetailResponse:
       type: object
       properties:
+        accessType:
+          type: string
+          enum:
+          - GENERAL
+          - DROP_ONLY
+        category:
+          type: string
+          enum:
+          - PLANNER
+          - STUDY
+          - CAREER
+          - WORK
+          - LIFE
+          - PRESENTATION
+        creator:
+          $ref: "#/components/schemas/TemplateCreatorResponse"
+        deliveryType:
+          type: string
+          enum:
+          - FILE
+          - LINK
+        description:
+          type: string
+        downloadCount:
+          type: integer
+          format: int64
+        format:
+          type: string
+          enum:
+          - NOTION
+          - PPT
         id:
           type: integer
           format: int64
@@ -39,6 +164,58 @@ components:
         title:
           type: string
       required:
+      - accessType
+      - category
+      - creator
+      - deliveryType
+      - description
+      - downloadCount
+      - format
+      - id
+      - thumbnailUrl
+      - title
+    TemplateSummaryResponse:
+      type: object
+      properties:
+        accessType:
+          type: string
+          enum:
+          - GENERAL
+          - DROP_ONLY
+        category:
+          type: string
+          enum:
+          - PLANNER
+          - STUDY
+          - CAREER
+          - WORK
+          - LIFE
+          - PRESENTATION
+        creator:
+          $ref: "#/components/schemas/TemplateCreatorResponse"
+        downloadCount:
+          type: integer
+          format: int64
+        format:
+          type: string
+          enum:
+          - NOTION
+          - PPT
+        id:
+          type: integer
+          format: int64
+        thumbnailUrl:
+          type:
+          - string
+          - "null"
+        title:
+          type: string
+      required:
+      - accessType
+      - category
+      - creator
+      - downloadCount
+      - format
       - id
       - thumbnailUrl
       - title
