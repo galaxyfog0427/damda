@@ -22,6 +22,8 @@ public class SecurityConfig {
                 .hasRole("CREATOR")
                 .requestMatchers(HttpMethod.GET, "/api/v1/templates/**")
                 .permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/templates/*/downloads")
+                .permitAll()
                 .anyRequest()
                 .authenticated());
 

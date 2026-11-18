@@ -5,6 +5,46 @@ info:
 servers:
 - url: /
 paths:
+  /api/v1/me/library:
+    get:
+      operationId: listLibrary
+      parameters:
+      - in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PagedModelLibraryItemResponse"
+          description: OK
+      tags:
+      - library-controller
+  /api/v1/me/library/{templateId}/downloads:
+    post:
+      operationId: redownload
+      parameters:
+      - in: path
+        name: templateId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DownloadResponse"
+          description: OK
+      tags:
+      - library-controller
   /api/v1/templates:
     get:
       operationId: list
@@ -76,8 +116,71 @@ paths:
           description: OK
       tags:
       - template-controller
+  /api/v1/templates/{id}/downloads:
+    post:
+      operationId: download
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DownloadResponse"
+          description: OK
+      tags:
+      - download-controller
 components:
   schemas:
+    DownloadResponse:
+      type: object
+      properties:
+        addedToLibrary:
+          type: boolean
+        deliveryType:
+          type: string
+          enum:
+          - FILE
+          - LINK
+        expiresAt:
+          type:
+          - string
+          - "null"
+          format: date-time
+        url:
+          type: string
+      required:
+      - addedToLibrary
+      - deliveryType
+      - expiresAt
+      - url
+    LibraryItemResponse:
+      type: object
+      properties:
+        format:
+          type: string
+          enum:
+          - NOTION
+          - PPT
+        templateId:
+          type: integer
+          format: int64
+        thumbnailUrl:
+          type:
+          - string
+          - "null"
+        title:
+          type: string
+      required:
+      - format
+      - templateId
+      - thumbnailUrl
+      - title
     PageMetadata:
       type: object
       properties:
@@ -98,6 +201,18 @@ components:
       - size
       - totalElements
       - totalPages
+    PagedModelLibraryItemResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/LibraryItemResponse"
+        page:
+          $ref: "#/components/schemas/PageMetadata"
+      required:
+      - content
+      - page
     PagedModelTemplateSummaryResponse:
       type: object
       properties:
