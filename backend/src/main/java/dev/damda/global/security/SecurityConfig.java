@@ -24,6 +24,13 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/templates/*/downloads")
                 .permitAll()
+                .requestMatchers(
+                        HttpMethod.POST,
+                        "/api/v1/signup/codes",
+                        "/api/v1/signup/verifications",
+                        "/api/v1/members",
+                        "/api/v1/password-resets")
+                .permitAll()
                 .anyRequest()
                 .authenticated());
 
