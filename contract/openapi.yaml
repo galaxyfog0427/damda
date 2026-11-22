@@ -5,6 +5,46 @@ info:
 servers:
 - url: /
 paths:
+  /api/v1/login:
+    post:
+      operationId: login
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "204":
+          description: 로그인 성공. 새 SESSION·XSRF-TOKEN 쿠키가 실린다
+        "401":
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: LOGIN_FAILED
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
+      tags:
+      - auth
+  /api/v1/logout:
+    post:
+      operationId: logout
+      responses:
+        "204":
+          description: "로그아웃. 세션 삭제, 쿠키 지움"
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
+      tags:
+      - auth
   /api/v1/me:
     get:
       operationId: me
@@ -15,6 +55,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/MeResponse"
           description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - me-controller
   /api/v1/me/library:
@@ -36,6 +82,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/PagedModelLibraryItemResponse"
           description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - library-controller
   /api/v1/me/library/{templateId}/downloads:
@@ -55,6 +107,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/DownloadResponse"
           description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - library-controller
   /api/v1/me/withdrawal:
@@ -69,6 +127,12 @@ paths:
       responses:
         "204":
           description: No Content
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - me-controller
   /api/v1/members:
@@ -83,6 +147,12 @@ paths:
       responses:
         "201":
           description: Created
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - signup-controller
   /api/v1/password-resets:
@@ -97,6 +167,12 @@ paths:
       responses:
         "202":
           description: Accepted
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - password-reset-controller
   /api/v1/signup/codes:
@@ -111,6 +187,12 @@ paths:
       responses:
         "202":
           description: Accepted
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - signup-controller
   /api/v1/signup/verifications:
@@ -129,6 +211,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/SignupVerificationResponse"
           description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - signup-controller
   /api/v1/templates:
@@ -181,6 +269,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/PagedModelTemplateSummaryResponse"
           description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - template-controller
   /api/v1/templates/{id}:
@@ -200,6 +294,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/TemplateDetailResponse"
           description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - template-controller
   /api/v1/templates/{id}/downloads:
@@ -219,6 +319,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/DownloadResponse"
           description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: 에러
       tags:
       - download-controller
 components:
@@ -245,6 +351,63 @@ components:
       - deliveryType
       - expiresAt
       - url
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+          - ACCESS_DENIED
+          - CSRF_TOKEN_INVALID
+          - DROP_ONLY_TEMPLATE
+          - INTERNAL_ERROR
+          - INVALID_REQUEST
+          - INVALID_SIGNUP_CODE
+          - INVALID_SIGNUP_TOKEN
+          - LIBRARY_ITEM_NOT_FOUND
+          - LOGIN_FAILED
+          - METHOD_NOT_ALLOWED
+          - NOT_FOUND
+          - NOT_IMPLEMENTED
+          - PASSWORD_MISMATCH
+          - TEMPLATE_NOT_DOWNLOADABLE
+          - TEMPLATE_NOT_FOUND
+          - TOO_MANY_REQUESTS
+          - UNAUTHENTICATED
+          - VALIDATION_FAILED
+          - WITHDRAWAL_NOT_ALLOWED
+        detail:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldErrorResponse"
+        status:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          type: string
+          format: uri
+      required:
+      - code
+      - detail
+      - status
+      - title
+      - type
+    FieldErrorResponse:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type:
+          - string
+          - "null"
+      required:
+      - field
+      - message
     LibraryItemResponse:
       type: object
       properties:
@@ -267,6 +430,19 @@ components:
       - templateId
       - thumbnailUrl
       - title
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        rememberMe:
+          type: boolean
+      required:
+      - email
+      - password
     MeResponse:
       type: object
       properties:
