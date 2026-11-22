@@ -34,7 +34,7 @@ public class ArchitectureTest {
             .mayNotBeAccessedByAnyLayer()
             .whereLayer("Domain")
             .mayOnlyBeAccessedByLayers("Api", "Application", "Infrastructure")
-            .because("...");
+            .because("ADR-0004 결정 2: 바깥 층만 안쪽을 부른다");
 
     @ArchTest
     static final ArchRule apiDoesNotUseRepository = noClasses()
@@ -43,7 +43,7 @@ public class ArchitectureTest {
             .should()
             .dependOnClassesThat()
             .haveSimpleNameEndingWith("Repository")
-            .because("...");
+            .because("컨트롤러는 서비스를 거쳐 저장소를 쓴다");
 
     @ArchTest
     static final ArchRule domainUsesOnlyGlobalError = noClasses()
@@ -52,9 +52,9 @@ public class ArchitectureTest {
             .should()
             .dependOnClassesThat(
                     resideInAPackage("dev.damda.global..").and(resideOutsideOfPackage("dev.damda.global.error..")))
-            .because("...");
+            .because("2-1: domain은 에러 코드 외의 공통 설정을 모른다");
 
     @ArchTest
     static final ArchRule featuresAreFreeOfCycles =
-            slices().matching("dev.damda.(*)..").should().beFreeOfCycles().because("...");
+            slices().matching("dev.damda.(*)..").should().beFreeOfCycles().because("기능끼리 순환이 생기면 한 기능만 떼어 고칠 수 없다");
 }
