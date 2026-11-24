@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr status *)",
+      "Bash(gh run view *)",
+      "Bash(gh run list *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr edit *)",
+      "Bash(gh pr comment *)",
+      "Bash(gh pr review *)",
+      "Bash(gh pr ready *)",
+      "Bash(gh issue comment *)",
+      "Bash(gh api *)",
+      "Edit(/frontend/src/api/schema.d.ts)"
+    ],
+    "deny": [
+      "Bash(gh pr merge *)",
+      "Bash(gh auth *)",
+      "Edit(/backend/**)",
+      "Edit(/contract/**)",
+      "Edit(/docs/**)",
+      "Edit(/.github/**)",
+      "Edit(/.claude/**)",
+      "Edit(/CLAUDE.md)",
+      "Edit(/frontend/CLAUDE.md)",
+      "Edit(/README.md)",
+      "Edit(/.gitignore)",
+      "Edit(/.nvmrc)",
+      "Read(**/.env)",
+      "Read(**/.env.*)"
+    ],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/bash",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-github.sh"],
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "excludedCommands": ["gh *", "git push *", "git fetch *", "git pull *"],
+    "filesystem": {
+      "allowWrite": ["~/.npm"],
+      "denyRead": ["~/.ssh", "~/.config/gh", "~/.aws", "~/.docker", "~/.kube", "~/.netrc"]
+    },
+    "credentials": {
+      "envVars": [
+        { "name": "GH_TOKEN", "mode": "deny" },
+        { "name": "GITHUB_TOKEN", "mode": "deny" },
+        { "name": "NPM_TOKEN", "mode": "deny" }
+      ]
+    },
+    "network": {
+      "allowedDomains": ["registry.npmjs.org"],
+      "deniedDomains": ["github.com", "*.github.com", "*.githubusercontent.com"]
+    }
+  }
+}
