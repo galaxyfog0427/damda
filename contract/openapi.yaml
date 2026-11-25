@@ -51,7 +51,7 @@ paths:
       responses:
         "200":
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/MeResponse"
           description: OK
@@ -78,7 +78,7 @@ paths:
       responses:
         "200":
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/PagedModelLibraryItemResponse"
           description: OK
@@ -103,7 +103,7 @@ paths:
       responses:
         "200":
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/DownloadResponse"
           description: OK
@@ -207,7 +207,7 @@ paths:
       responses:
         "200":
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/SignupVerificationResponse"
           description: OK
@@ -265,7 +265,7 @@ paths:
       responses:
         "200":
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/PagedModelTemplateSummaryResponse"
           description: OK
@@ -290,7 +290,7 @@ paths:
       responses:
         "200":
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/TemplateDetailResponse"
           description: OK
@@ -315,7 +315,7 @@ paths:
       responses:
         "200":
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/DownloadResponse"
           description: OK
