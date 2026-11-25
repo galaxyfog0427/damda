@@ -18,6 +18,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       backend: ${{ steps.diff.outputs.backend }}
+      frontend: ${{ steps.diff.outputs.frontend }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -27,17 +28,30 @@ jobs:
           EVENT: ${{ github.event_name }}
           BASE: ${{ github.base_ref }}
         run: |
+          has_frontend=false
+          if [ -f frontend/package.json ]; then
+            has_frontend=true
+          fi
+
           if [ "$EVENT" = "push" ]; then
             echo "backend=true" >> "$GITHUB_OUTPUT"
+            echo "frontend=$has_frontend" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          changed=$(git diff --name-only "origin/$BASE...HEAD")
+
+          changed=$(git diff --name-only --no-renames "origin/$BASE...HEAD")
           echo "$changed"
+
+          backend=false
           if echo "$changed" | grep -qE '^(backend/|contract/|\.github/workflows/)'; then
-            echo "backend=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "backend=false" >> "$GITHUB_OUTPUT"
+            backend=true
           fi
+          frontend=false
+          if [ "$has_frontend" = true ] && echo "$changed" | grep -qE '^(frontend/|contract/|\.github/workflows/|\.nvmrc$)'; then
+            frontend=true
+          fi
+          echo "backend=$backend" >> "$GITHUB_OUTPUT"
+          echo "frontend=$frontend" >> "$GITHUB_OUTPUT"
 
   backend:
     needs: changes
@@ -61,5 +75,57 @@ jobs:
             git status --porcelain -- ../contract
             git diff -- ../contract
             echo "::error::contract/openapi.yaml이 코드와 다릅니다. 로컬에서 ./gradlew test 뒤 파일을 커밋하세요."
+            exit 1
+          fi
+
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: 생성 타입이 계약과 같은지 (ADR-0006 결정 2)
+        run: |
+          npm run gen:api
+          if [ -n "$(git status --porcelain -- src/api)" ]; then
+            git status --porcelain -- src/api
+            git diff -- src/api
+            echo "::error::src/api/schema.d.ts가 contract/openapi.yaml과 다릅니다. frontend/에서 npm run gen:api 뒤 파일을 커밋하세요."
+            exit 1
+          fi
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+
+  fe-boundary:
+    if: startsWith(github.head_ref, 'fe/')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: fe/ 브랜치는 frontend/ 안만 바꿨는지 (ADR-0012 결정 3)
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          changed=$(git diff --name-only --no-renames "origin/$BASE...HEAD")
+          echo "$changed"
+          outside=$(echo "$changed" | grep -vE '^frontend/' || true)
+          rules=$(echo "$changed" | grep -xF 'frontend/CLAUDE.md' || true)
+          blocked=$(printf '%s\n%s\n' "$outside" "$rules" | sed '/^$/d')
+          if [ -n "$blocked" ]; then
+            echo "$blocked"
+            echo "::error::fe/ 브랜치의 PR이 frontend/ 밖이나 frontend/CLAUDE.md를 바꿨습니다(ADR-0012 결정 3)."
             exit 1
           fi
