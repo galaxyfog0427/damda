@@ -26,6 +26,7 @@
     "deny": [
       "Bash(gh pr merge *)",
       "Bash(gh auth *)",
+      "Agent(fe-reviewer)",
       "Edit(/backend/**)",
       "Edit(/contract/**)",
       "Edit(/docs/**)",
