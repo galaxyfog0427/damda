@@ -13,3 +13,4 @@ springdoc:
     java-nullable-property-customizer:
       enabled: true     # @Nullable 칸을 계약에 "null 가능" 으로 (ADR-0006 결정 1)
   writer-with-order-by-keys: true     # 계약의 키를 정렬해 매번 같은 파일로 (ADR-0006 결과)
+  default-produces-media-type: application/json   # 성공 응답을 JSON으로 적음, ADR-0006, #54)
